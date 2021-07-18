@@ -1,5 +1,5 @@
 import { LoadfacebookUserApi } from '@/data/contracts/apis'
-import { LoadUserAccountRepo } from '@/data/contracts/repos'
+import { CreateUserAccountRepo, LoadUserAccountRepo } from '@/data/contracts/repos'
 import { FacebookAuthenticationService } from '@/data/services'
 import { AuthenticationError } from '@/domain/errors'
 
@@ -9,22 +9,26 @@ describe('FacebookAuthService', () => {
   let sut: FacebookAuthenticationService
   let loadfacebookUserApi: MockProxy<LoadfacebookUserApi>
   let loadUserAccountRepo: MockProxy<LoadUserAccountRepo>
+  let createUserAccountRepo: MockProxy<CreateUserAccountRepo>
 
   const token = 'token'
+  const facebookUserMock = {
+    name: 'any_fb_name',
+    email: 'any_fb_email',
+    facebookId: 'any_fb_id'
+  }
 
   beforeEach(() => {
     jest.clearAllMocks()
 
-    loadfacebookUserApi = mock<LoadfacebookUserApi>()
-    loadfacebookUserApi.loadUser.mockResolvedValue({
-      name: 'any_fb_name',
-      email: 'any_fb_email',
-      facebookId: 'any_fb_id'
-    })
+    loadfacebookUserApi = mock()
+    loadfacebookUserApi.loadUser.mockResolvedValue(facebookUserMock)
 
-    loadUserAccountRepo = mock<LoadUserAccountRepo>()
+    loadUserAccountRepo = mock()
+    loadUserAccountRepo.load.mockResolvedValue(undefined)
 
-    sut = new FacebookAuthenticationService(loadfacebookUserApi, loadUserAccountRepo)
+    createUserAccountRepo = mock()
+    sut = new FacebookAuthenticationService(loadfacebookUserApi, loadUserAccountRepo, createUserAccountRepo)
   })
 
   it('should call LoadfacebookUserApi with correct params', async () => {
@@ -46,5 +50,12 @@ describe('FacebookAuthService', () => {
 
     expect(loadUserAccountRepo.load).toHaveBeenCalledTimes(1)
     expect(loadUserAccountRepo.load).toHaveBeenCalledWith({ email: 'any_fb_email' })
+  })
+
+  it('should call CreateUserAccountRepo when LoadfacebookUserApi returns undefined', async () => {
+    await sut.perform({ token })
+
+    expect(createUserAccountRepo.createFromFacebook).toHaveBeenCalledTimes(1)
+    expect(createUserAccountRepo.createFromFacebook).toHaveBeenCalledWith(facebookUserMock)
   })
 })
