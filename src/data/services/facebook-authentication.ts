@@ -1,12 +1,12 @@
-import { LoadfacebookUserApi } from '@/data/contracts/apis'
-import { CreateUserAccountRepo, LoadUserAccountRepo } from '@/data/contracts/repos'
+import { LoadFacebookUserApi } from '@/data/contracts/apis'
+import { CreateFacebookAccountRepo, LoadUserAccountRepo, UpdateFacebookAccountRepo } from '@/data/contracts/repos'
 import { AuthenticationError } from '@/domain/errors'
 import { FacebookAuthentication } from '@/domain/features'
 
 export class FacebookAuthenticationService implements FacebookAuthentication {
   constructor (
-    private readonly facebookApi: LoadfacebookUserApi,
-    private readonly userAccountRepo: LoadUserAccountRepo & CreateUserAccountRepo,
+    private readonly facebookApi: LoadFacebookUserApi,
+    private readonly userAccountRepo: LoadUserAccountRepo & CreateFacebookAccountRepo & UpdateFacebookAccountRepo,
   ) {}
 
   async perform (params: FacebookAuthentication.Params): Promise<FacebookAuthentication.Result> {
@@ -15,8 +15,16 @@ export class FacebookAuthenticationService implements FacebookAuthentication {
       return new AuthenticationError()
     }
 
-    await this.userAccountRepo.load({ email: user.email })
-    await this.userAccountRepo.createFromFacebook(user)
+    const userAccount = await this.userAccountRepo.load({ email: user.email })
+    if (!userAccount) {
+      await this.userAccountRepo.createFromFacebook(user)
+    } else {
+      await this.userAccountRepo.updateWithFacebook({
+        id: userAccount.id,
+        name: userAccount.name ?? user.name,
+        facebookId: user.facebookId,
+      })
+    }
     return new AuthenticationError()
   }
 }
