@@ -10,19 +10,19 @@ export class FacebookAuthenticationService implements FacebookAuthentication {
   ) {}
 
   async perform (params: FacebookAuthentication.Params): Promise<FacebookAuthentication.Result> {
-    const user = await this.facebookApi.loadUser(params)
-    if (!user) {
+    const facebookUser = await this.facebookApi.loadUser(params)
+    if (!facebookUser) {
       return new AuthenticationError()
     }
 
-    const userAccount = await this.userAccountRepo.load({ email: user.email })
+    const userAccount = await this.userAccountRepo.load({ email: facebookUser.email })
     if (!userAccount) {
-      await this.userAccountRepo.createFromFacebook(user)
+      await this.userAccountRepo.createFromFacebook(facebookUser)
     } else {
       await this.userAccountRepo.updateWithFacebook({
         id: userAccount.id,
-        name: userAccount.name ?? user.name,
-        facebookId: user.facebookId,
+        name: userAccount.name ?? facebookUser.name,
+        facebookId: facebookUser.facebookId,
       })
     }
     return new AuthenticationError()
