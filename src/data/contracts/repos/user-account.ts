@@ -8,29 +8,18 @@ export namespace LoadUserAccountRepo {
 
   export type Result = undefined | {
     id: string
-    email: string
     name?: string
   }
 }
 
-export interface CreateFacebookAccountRepo {
-  createFromFacebook: (params: CreateFacebookAccountRepo.Params) => Promise<void>
+export interface SaveFacebookAccountRepo {
+  saveWithFacebookData: (params: SaveFacebookAccountRepo.Params) => Promise<void>
 }
-export namespace CreateFacebookAccountRepo {
+export namespace SaveFacebookAccountRepo {
   export type Params = {
-    facebookId: string
+    id?: string
     name: string
     email: string
-  }
-}
-
-export interface UpdateFacebookAccountRepo {
-  updateWithFacebook: (params: UpdateFacebookAccountRepo.Params) => Promise<void>
-}
-export namespace UpdateFacebookAccountRepo {
-  export type Params = {
-    id: string
-    name: string
     facebookId: string
   }
 }
