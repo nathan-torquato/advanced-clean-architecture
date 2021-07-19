@@ -18,9 +18,10 @@ export class FacebookAuthenticationService implements FacebookAuthentication {
       const userAccount = await this.userAccountRepo.load({ email: facebookUser.email })
       const facebookAccount = new FacebookAccount(facebookUser, userAccount)
       const { id } = await this.userAccountRepo.saveWithFacebookData(facebookAccount)
-      await this.crypto.generateToken({
+      const token = await this.crypto.generateToken({
         key: id, expirationInMs: AccessToken.expirationInMs
       })
+      return new AccessToken(token)
     }
 
     return new AuthenticationError()

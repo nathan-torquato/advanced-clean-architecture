@@ -8,5 +8,5 @@ export namespace TokenGenerator {
     expirationInMs: number
   }
 
-  export type Result = {}
+  export type Result = string
 }
