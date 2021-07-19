@@ -11,20 +11,17 @@ describe('FacebookAuthService', () => {
   let facebookApi: MockProxy<LoadFacebookUserApi>
   let userAccountRepo: MockProxy<LoadUserAccountRepo & SaveFacebookAccountRepo>
   let crypto: MockProxy<TokenGenerator>
+  let token: string
 
-  const token = 'token'
-  const facebookUserMock = {
-    name: 'any_fb_name',
-    email: 'any_fb_email',
-    facebookId: 'any_fb_id'
-  }
-
-  beforeEach(() => {
-    jest.clearAllMocks()
-    jest.restoreAllMocks()
+  beforeAll(() => {
+    token = 'token'
 
     facebookApi = mock()
-    facebookApi.loadUser.mockResolvedValue(facebookUserMock)
+    facebookApi.loadUser.mockResolvedValue({
+      name: 'any_fb_name',
+      email: 'any_fb_email',
+      facebookId: 'any_fb_id'
+    })
 
     userAccountRepo = mock()
     userAccountRepo.load.mockResolvedValue(undefined)
@@ -32,7 +29,9 @@ describe('FacebookAuthService', () => {
 
     crypto = mock()
     crypto.generateToken.mockResolvedValue('any_token')
+  })
 
+  beforeEach(() => {
     sut = new FacebookAuthenticationService(facebookApi, userAccountRepo, crypto)
   })
 
@@ -44,7 +43,7 @@ describe('FacebookAuthService', () => {
   })
 
   it('should return AuthenticationError when LoadFacebookUserApi finds no user', async () => {
-    facebookApi.loadUser.mockResolvedValue(undefined)
+    facebookApi.loadUser.mockResolvedValueOnce(undefined)
 
     const result = await sut.perform({ token })
     expect(result).toEqual(new AuthenticationError())
