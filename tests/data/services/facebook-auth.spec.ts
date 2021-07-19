@@ -2,6 +2,7 @@ import { LoadFacebookUserApi } from '@/data/contracts/apis'
 import { LoadUserAccountRepo, SaveFacebookAccountRepo } from '@/data/contracts/repos'
 import { FacebookAuthenticationService } from '@/data/services'
 import { AuthenticationError } from '@/domain/errors'
+import { FacebookAccount } from '@/domain/models'
 import { mock, MockProxy } from 'jest-mock-extended'
 
 describe('FacebookAuthService', () => {
@@ -18,6 +19,7 @@ describe('FacebookAuthService', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
+    jest.restoreAllMocks()
 
     facebookApi = mock()
     facebookApi.loadUser.mockResolvedValue(facebookUserMock)
@@ -49,41 +51,8 @@ describe('FacebookAuthService', () => {
     expect(userAccountRepo.load).toHaveBeenCalledWith({ email: 'any_fb_email' })
   })
 
-  it('should call SaveWithFacebookData with correct params', async () => {
+  it('should call SaveWithFacebookData instance of FacebookAccount', async () => {
     await sut.perform({ token })
-
-    expect(userAccountRepo.saveWithFacebookData).toHaveBeenCalledTimes(1)
-    expect(userAccountRepo.saveWithFacebookData).toHaveBeenCalledWith(facebookUserMock)
-  })
-
-  it('should not update account name', async () => {
-    userAccountRepo.load.mockResolvedValue({
-      id: 'any_id',
-      name: 'any_name'
-    })
-
-    await sut.perform({ token })
-
-    expect(userAccountRepo.saveWithFacebookData).toHaveBeenCalledTimes(1)
-    expect(userAccountRepo.saveWithFacebookData).toHaveBeenCalledWith({
-      id: 'any_id',
-      name: 'any_name',
-      email: 'any_fb_email',
-      facebookId: 'any_fb_id',
-    })
-  })
-
-  it('should update account name', async () => {
-    userAccountRepo.load.mockResolvedValue({
-      id: 'any_id',
-    })
-
-    await sut.perform({ token })
-
-    expect(userAccountRepo.saveWithFacebookData).toHaveBeenCalledTimes(1)
-    expect(userAccountRepo.saveWithFacebookData).toHaveBeenCalledWith({
-      id: 'any_id',
-      ...facebookUserMock
-    })
+    expect(userAccountRepo.saveWithFacebookData).toHaveBeenCalledWith(expect.any(FacebookAccount))
   })
 })
