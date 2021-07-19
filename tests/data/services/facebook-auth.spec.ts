@@ -49,11 +49,11 @@ describe('FacebookAuthService', () => {
     expect(userAccountRepo.load).toHaveBeenCalledWith({ email: 'any_fb_email' })
   })
 
-  it('should create account with facebook data', async () => {
+  it('should call SaveWithFacebookData with correct params', async () => {
     await sut.perform({ token })
 
-    expect(userAccountRepo.saveWithFacebookData).toHaveBeenCalledWith(facebookUserMock)
     expect(userAccountRepo.saveWithFacebookData).toHaveBeenCalledTimes(1)
+    expect(userAccountRepo.saveWithFacebookData).toHaveBeenCalledWith(facebookUserMock)
   })
 
   it('should not update account name', async () => {
