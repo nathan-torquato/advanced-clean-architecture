@@ -8,7 +8,6 @@ describe('AccessToken', () => {
   })
 
   it('should expire in 30min', async () => {
-    const sut = new AccessToken('any_value')
-    expect(sut.expirationInMs).toBe(30 * 60 * 1000)
+    expect(AccessToken.expirationInMs).toBe(30 * 60 * 1000)
   })
 })
