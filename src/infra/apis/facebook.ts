@@ -1,7 +1,7 @@
 import { LoadFacebookUserApi } from '@/data/contracts/apis'
 import { HttpGetClient } from '@/infra/http'
 
-export class FacebookAPI {
+export class FacebookAPI implements LoadFacebookUserApi {
   private readonly baseUrl = 'https://graph.facebook.com'
 
   constructor (
@@ -10,7 +10,7 @@ export class FacebookAPI {
     private readonly clientSecret: string
   ) {}
 
-  async loadUser (params: LoadFacebookUserApi.Params): Promise<void> {
+  async loadUser (params: LoadFacebookUserApi.Params): Promise<LoadFacebookUserApi.Result> {
     const appToken = await this.httpClient.get({
       url: `${this.baseUrl}/oauth/access_token`,
       params: {
@@ -28,7 +28,7 @@ export class FacebookAPI {
       }
     })
 
-    await this.httpClient.get({
+    const fbuser = await this.httpClient.get({
       // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
       url: `${this.baseUrl}/${debugToken.data.user_id}`,
       params: {
@@ -36,5 +36,11 @@ export class FacebookAPI {
         access_token: params.token
       }
     })
+
+    return {
+      facebookId: fbuser.id,
+      email: fbuser.email,
+      name: fbuser.name,
+    }
   }
 }
