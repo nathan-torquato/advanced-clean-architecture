@@ -8,6 +8,7 @@ describe('AxiosHttpClient', () => {
   let sut: AxiosHttpClient
 
   const fakeAxios = axios as jest.Mocked<typeof axios>
+
   const url = 'any'
   const params = { any: 'param' }
   const successData = 'any_data'
