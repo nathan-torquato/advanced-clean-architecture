@@ -3,7 +3,7 @@ export interface HttpGetClient {
 }
 
 export namespace HttpGetClient {
-  export type Params<U> = {
+  export type Params<U = any> = {
     url: string
     params?: U
   }
