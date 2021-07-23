@@ -11,16 +11,20 @@ export class AxiosHttpClient {
 }
 
 describe('AxiosHttpClient', () => {
-  it('should call get with correct params', async () => {
-    const fakeAxios = axios as jest.Mocked<typeof axios>
-    const sut = new AxiosHttpClient()
-    await sut.get({ url: 'any_url', params: { any: 'any' } })
+  let sut: AxiosHttpClient
 
-    expect(fakeAxios.get).toHaveBeenCalledWith('any_url', {
-      params: {
-        any: 'any'
-      }
-    })
+  const fakeAxios = axios as jest.Mocked<typeof axios>
+  const url = 'any'
+  const params = { any: 'param' }
+
+  beforeEach(() => {
+    sut = new AxiosHttpClient()
+  })
+
+  it('should call get with correct params', async () => {
+    await sut.get({ url, params })
+
+    expect(fakeAxios.get).toHaveBeenCalledWith(url, { params })
     expect(fakeAxios.get).toHaveBeenCalledTimes(1)
   })
 })
