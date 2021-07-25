@@ -48,5 +48,22 @@ describe('PgUserAccountRepo', () => {
     const sut = new PgUserAccountRepo()
     const account = await sut.load({ email: 'existing_email' })
     expect(account?.id).toBeTruthy()
+
+    await connection.close()
+  })
+
+  it('should return undefined if email does not exist', async () => {
+    const db = newDb()
+    const connection = await db.adapters.createTypeormConnection({
+      type: 'postgres',
+      entities: [PgUser]
+    })
+    await connection.synchronize()
+
+    const sut = new PgUserAccountRepo()
+    const account = await sut.load({ email: 'non_existing_email' })
+    expect(account).toBeUndefined()
+
+    await connection.close()
   })
 })
