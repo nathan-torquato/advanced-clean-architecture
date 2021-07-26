@@ -19,11 +19,16 @@ export class PgUserAccountRepo implements LoadUserAccountRepo, SaveFacebookAccou
   }
 
   async saveWithFacebookData (params: SaveFacebookAccountRepo.Params): Promise<SaveFacebookAccountRepo.Result> {
-    await this.userRepo.save({
-      email: params.email,
-      facebookId: params.facebookId,
-      name: params.name
-    })
+    const { id, ...accountData } = params
+
+    if (!id) {
+      await this.userRepo.save(accountData)
+    } else {
+      await this.userRepo.update({ id: +id }, {
+        facebookId: params.facebookId,
+        name: params.name
+      })
+    }
 
     return {} as any
   }

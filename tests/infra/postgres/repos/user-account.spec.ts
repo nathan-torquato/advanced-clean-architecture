@@ -54,5 +54,28 @@ describe('PgUserAccountRepo', () => {
       const pgUserCount = await pgUserRepo.count({ email: 'any_email' })
       expect(pgUserCount).toBe(1)
     })
+
+    it('should update an account if id is defined', async () => {
+      const { id } = await pgUserRepo.save({
+        name: 'any_name',
+        email: 'any_email',
+        facebookId: 'any_facebookId',
+      })
+
+      await sut.saveWithFacebookData({
+        id: id.toString(),
+        name: 'new_name',
+        email: 'new_email',
+        facebookId: 'new_facebookId',
+      })
+
+      const pgUser = await pgUserRepo.findOneOrFail({ id })
+      expect(pgUser).toEqual<PgUser>({
+        id,
+        name: 'new_name',
+        email: 'any_email',
+        facebookId: 'new_facebookId',
+      })
+    })
   })
 })
