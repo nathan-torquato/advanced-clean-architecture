@@ -27,17 +27,19 @@ describe('PgUserAccountRepo', () => {
     await getConnection().close()
   })
 
-  it('should return an account if email exists', async () => {
-    await pgUserRepo.save({ email: 'existing_email' })
+  describe('load', () => {
+    it('should return an account if email exists', async () => {
+      await pgUserRepo.save({ email: 'existing_email' })
 
-    const sut = new PgUserAccountRepo()
+      const sut = new PgUserAccountRepo()
 
-    const account = await sut.load({ email: 'existing_email' })
-    expect(account?.id).toBeTruthy()
-  })
+      const account = await sut.load({ email: 'existing_email' })
+      expect(account?.id).toBeTruthy()
+    })
 
-  it('should return undefined if email does not exist', async () => {
-    const account = await sut.load({ email: 'non_existing_email' })
-    expect(account).toBeUndefined()
+    it('should return undefined if email does not exist', async () => {
+      const account = await sut.load({ email: 'non_existing_email' })
+      expect(account).toBeUndefined()
+    })
   })
 })
