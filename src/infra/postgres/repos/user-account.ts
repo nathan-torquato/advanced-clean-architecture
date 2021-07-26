@@ -22,14 +22,17 @@ export class PgUserAccountRepo implements LoadUserAccountRepo, SaveFacebookAccou
     const { id, ...accountData } = params
 
     if (!id) {
-      await this.userRepo.save(accountData)
-    } else {
-      await this.userRepo.update({ id: +id }, {
-        facebookId: params.facebookId,
-        name: params.name
-      })
+      const newuser = await this.userRepo.save(accountData)
+      return {
+        id: newuser.id.toString()
+      }
     }
 
-    return {} as any
+    await this.userRepo.update({ id: +id }, {
+      facebookId: params.facebookId,
+      name: params.name
+    })
+
+    return { id }
   }
 }
