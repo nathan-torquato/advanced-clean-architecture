@@ -60,7 +60,6 @@ export class FacebookAPI implements LoadFacebookUserApi {
   private async getUserInfo (params: LoadFacebookUserApi.Params): Promise<UserInfo> {
     const debugToken = await this.getDebugToken(params)
     return await this.httpClient.get({
-      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
       url: `${this.baseUrl}/${debugToken.data.user_id}`,
       params: {
         fields: ['id', 'name', 'email'].join(','),
