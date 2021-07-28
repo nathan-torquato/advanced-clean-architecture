@@ -1,5 +1,5 @@
 import { FacebookLoginController } from '@/application/controllers'
-import { RequiredFieldError, ServerError } from '@/application/errors'
+import { RequiredFieldError, ServerError, UnauthorizedError } from '@/application/errors'
 import { HttpResponse } from '@/application/helpers'
 import { FacebookAuthenticationService } from '@/data/services'
 import { AuthenticationError } from '@/domain/errors'
@@ -55,7 +55,7 @@ describe('FacebookLoginController', () => {
     const response = await sut.handle({ token })
     expect(response).toEqual<HttpResponse>({
       statusCode: 401,
-      data: new AuthenticationError()
+      data: new UnauthorizedError()
     })
   })
 
