@@ -5,7 +5,7 @@ import { FacebookAuthenticationService } from '@/data/services'
 export class FacebookLoginController {
   constructor (private readonly facebookAuthService: FacebookAuthenticationService) {}
 
-  async handle (request: any): Promise<HttpResponse> {
+  async handle (request: HttpRequest): Promise<HttpResponse<Model>> {
     try {
       if (!request.token) {
         return badRequest(new RequiredFieldError('token'))
@@ -23,4 +23,12 @@ export class FacebookLoginController {
       return serverError(error)
     }
   }
+}
+
+type HttpRequest = {
+  token: string
+}
+
+type Model = Error | {
+  accessToken: string
 }
