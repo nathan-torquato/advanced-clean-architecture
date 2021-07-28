@@ -21,6 +21,13 @@ describe('FacebookLoginController', () => {
     fakeFacebookAuth.perform.mockResolvedValue(new AccessToken('any_value'))
   })
 
+  it('should return call validation with correct params', async () => {
+    await sut.handle({ token })
+
+    expect(RequiredStringValidator).toHaveBeenCalledWith('token', 'any_token')
+    expect(RequiredStringValidator).toHaveBeenCalledTimes(1)
+  })
+
   it('should return 400 if validation fails', async () => {
     const error = new Error('validation_error')
     const RequiredStringValidatorSpy = jest.fn().mockImplementationOnce(() => ({
@@ -30,8 +37,6 @@ describe('FacebookLoginController', () => {
 
     const httpResponse = await sut.handle({ token })
 
-    expect(RequiredStringValidator).toHaveBeenCalledWith('any_token', 'token')
-    expect(RequiredStringValidator).toHaveBeenCalledTimes(1)
     expect(httpResponse).toEqual({
       statusCode: 400,
       data: error

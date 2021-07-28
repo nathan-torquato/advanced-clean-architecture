@@ -6,12 +6,12 @@ export class FacebookLoginController {
   constructor (private readonly facebookAuthService: FacebookAuthenticationService) {}
 
   async handle (request: HttpRequest): Promise<HttpResponse<Model>> {
-    try {
-      const error = this.validate(request)
-      if (error) {
-        return badRequest(error)
-      }
+    const error = this.validate(request)
+    if (error) {
+      return badRequest(error)
+    }
 
+    try {
       const response = await this.facebookAuthService.perform(request)
       if (response instanceof Error) {
         return unauthorized()
@@ -26,7 +26,7 @@ export class FacebookLoginController {
   }
 
   private validate (httpRequest: HttpRequest): Error | undefined {
-    const validator = new RequiredStringValidator(httpRequest.token, 'token')
+    const validator = new RequiredStringValidator('token', httpRequest.token)
     return validator.validate()
   }
 }
