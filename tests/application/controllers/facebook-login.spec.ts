@@ -1,5 +1,5 @@
 import { FacebookLoginController } from '@/application/controllers'
-import { ServerError } from '@/application/errors'
+import { RequiredFieldError, ServerError } from '@/application/errors'
 import { HttpResponse } from '@/application/helpers'
 import { FacebookAuthenticationService } from '@/data/services'
 import { AuthenticationError } from '@/domain/errors'
@@ -21,7 +21,7 @@ describe('FacebookLoginController', () => {
     const response = await sut.handle({ token: '' })
     expect(response).toEqual<HttpResponse>({
       statusCode: 400,
-      data: new Error('the field token is required')
+      data: new RequiredFieldError('token')
     })
   })
 
@@ -29,7 +29,7 @@ describe('FacebookLoginController', () => {
     const response = await sut.handle({ token: undefined })
     expect(response).toEqual<HttpResponse>({
       statusCode: 400,
-      data: new Error('the field token is required')
+      data: new RequiredFieldError('token')
     })
   })
 
@@ -37,7 +37,7 @@ describe('FacebookLoginController', () => {
     const response = await sut.handle({ token: null })
     expect(response).toEqual<HttpResponse>({
       statusCode: 400,
-      data: new Error('the field token is required')
+      data: new RequiredFieldError('token')
     })
   })
 

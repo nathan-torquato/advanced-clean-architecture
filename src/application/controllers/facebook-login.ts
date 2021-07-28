@@ -1,5 +1,5 @@
-import { ServerError } from '@/application/errors'
-import { HttpResponse } from '@/application/helpers'
+import { RequiredFieldError, ServerError } from '@/application/errors'
+import { badRequest, HttpResponse } from '@/application/helpers'
 import { FacebookAuthenticationService } from '@/data/services'
 
 export class FacebookLoginController {
@@ -8,10 +8,7 @@ export class FacebookLoginController {
   async handle (request: any): Promise<HttpResponse> {
     try {
       if (!request.token) {
-        return {
-          statusCode: 400,
-          data: new Error('the field token is required')
-        }
+        return badRequest(new RequiredFieldError('token'))
       }
 
       const response = await this.facebookAuthService.perform(request)
