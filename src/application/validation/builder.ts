@@ -13,7 +13,7 @@ export class ValidationBuilder {
   }
 
   requiredString (): ValidationBuilder {
-    this.validators.push(new RequiredStringValidator(this.value, this.fieldName))
+    this.validators.push(new RequiredStringValidator(this.fieldName, this.value))
     return this
   }
 
