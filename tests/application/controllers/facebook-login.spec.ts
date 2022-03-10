@@ -6,7 +6,7 @@ import { FacebookAuthenticationService } from '@/data/services'
 import { AuthenticationError } from '@/domain/errors'
 import { AccessToken } from '@/domain/models'
 import { mock } from 'jest-mock-extended'
-import { mocked } from 'ts-jest/utils'
+import { mocked } from 'jest-mock'
 
 jest.mock('@/application/validation/composite')
 
@@ -32,10 +32,8 @@ describe('FacebookLoginController', () => {
 
   it('should return 400 if validation fails', async () => {
     const error = new Error('validation_error')
-    const ValidationCompositeSpy = jest.fn().mockImplementationOnce(() => ({
-      validate: jest.fn().mockReturnValueOnce(error)
-    }))
-    mocked(ValidationComposite).mockImplementationOnce(ValidationCompositeSpy)
+
+    mocked(ValidationComposite.prototype.validate).mockReturnValueOnce(error)
 
     const httpResponse = await sut.handle({ token })
 
